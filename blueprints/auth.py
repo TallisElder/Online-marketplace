@@ -11,7 +11,6 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
-    
         if user and check_password_hash(user.password_hash, password):
             session['username'] = username
             return redirect(url_for('home.home_page'))
@@ -27,7 +26,7 @@ def register():
         if User.query.filter_by(username=username).first():
             return 'Username already exists.'
         hashed_password = generate_password_hash('password', method='pbkdf2')
-        new_user = User(username=username, password_hash=hashed_password, privilage=privilage)
+        new_user = User(username=username, password_hash=hashed_password, privilege=privilage)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('auth.login'))
