@@ -20,7 +20,7 @@ def account():
             return "Passwords do not match."
 
         user = User.query.filter_by(username=session['username']).first()
-        user.password_hash = generate_password_hash(new_password, method='sha256')
+        user.password_hash = generate_password_hash(new_password, method='pbkdf2')
         db.session.commit()
         return "Password updated successfully."
 
