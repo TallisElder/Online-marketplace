@@ -25,7 +25,7 @@ def register():
         privilage = request.form['admin']
         if User.query.filter_by(username=username).first():
             return 'Username already exists.'
-        hashed_password = generate_password_hash('password', method='pbkdf2')
+        hashed_password = generate_password_hash(password, method='pbkdf2')
         new_user = User(username=username, password_hash=hashed_password, privilege=privilage)
         db.session.add(new_user)
         db.session.commit()
