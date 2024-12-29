@@ -52,10 +52,18 @@
 </head>
 <body>
     <h1>Welcome to the Marketplace</h1>
-    <a href="/account">Account</a>
-    <a href="/logout">Logout</a>
-    <button id="createListingBtn">Create Listing</button>
 
+    {% if session.get('privilege') == 1 %}
+    <a href="{{ url_for('admin.admin_panel') }}" class="admin-btn">Admin Panel</a>
+    {% endif %}
+
+    <a href="/account">Account</a>
+
+    <form method="POST" action="/logout">
+        <button type="submit">Logout</button>
+    </form>
+
+    <button id="createListingBtn">Create Listing</button>
     <!-- Create Listing Modal -->
     <div class="modal-overlay" id="modalOverlay"></div>
     <div class="modal" id="createListingModal">
@@ -82,6 +90,7 @@
             <p>{{ listing.description }}</p>
             <p><strong>Price:</strong> ${{ listing.price }}</p>
             <p><strong>Posted by:</strong> {{ listing.username }}</p>
+
             {% if not listing.is_sold %}
                 <form method="POST" action="/buy/{{ listing.id }}">
                     <button type="submit">Buy Now</button>
@@ -89,7 +98,9 @@
             {% else %}
                 <p><strong>Sold</strong></p>
             {% endif %}
-            {% if session['username'] == listing.username or session.get('role') == 'admin' %}
+
+            <!-- Show Delete button if the user is the owner or has privilege 1 (admin) -->
+            {% if session['username'] == listing.username or session.get('privilege') == 1 %}
                 <form method="POST" action="/delete_listing/{{ listing.id }}">
                     <button type="submit">Delete</button>
                 </form>

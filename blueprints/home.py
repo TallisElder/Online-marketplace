@@ -21,6 +21,9 @@ def home_page():
     if not session.get('username'):
         return redirect(url_for('auth.login'))
     listings = Listing.query.all()
+
+    is_admin = session.get('privilege') == '1'
+
     return render_template('home.html', listings=listings)
 
 @home_bp.route('/create_listing', methods=['POST'])
@@ -53,7 +56,7 @@ def create_listing():
     else:
         flash('Invalid file type. Please upload a valid image.')
         return redirect(url_for('home.home_page'))
-
+    
 @home_bp.route('/delete_listing/<int:listing_id>', methods=['POST'])
 def delete_listing(listing_id):
     if not session.get('username'):
@@ -62,13 +65,21 @@ def delete_listing(listing_id):
     # Query the listing
     listing = Listing.query.get_or_404(listing_id)
 
-    # Check if the user is the owner or an admin
-    if session['username'] != listing.username and session.get('role') != '1':
+    # Check if the user is the owner of the listing or has admin privilege (privilege=1)
+    if session['username'] != listing.username and session.get('privilege') != 1:  # Check privilege 1 for admin
         flash('You do not have permission to delete this listing.')
         return redirect(url_for('home.home_page'))
 
-    # Delete the listing
+    # Get the file path of the image
+    image_filepath = listing.image_url  # Assuming image_url is stored with the full path like 'static/ListingPhotos/filename.jpg'
+    
+    # Delete the file from the filesystem
+    if os.path.exists(image_filepath):
+        os.remove(image_filepath)
+    
+    # Delete the listing from the database
     db.session.delete(listing)
     db.session.commit()
-    flash('Listing deleted successfully.')
+
+    flash('Listing and associated image deleted successfully.')
     return redirect(url_for('home.home_page'))
