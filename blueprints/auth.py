@@ -36,3 +36,4 @@ def register():
 def logout():
     session.pop('username', None)
     return redirect(url_for('auth.login'))
+    return render_template('login.html')
