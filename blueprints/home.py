@@ -56,6 +56,7 @@ def create_listing():
     else:
         flash('Invalid file type. Please upload a valid image.')
         return redirect(url_for('home.home_page'))
+    
 @home_bp.route('/delete_listing/<int:listing_id>', methods=['POST'])
 def delete_listing(listing_id):
     if not session.get('username'):
@@ -64,8 +65,8 @@ def delete_listing(listing_id):
     # Query the listing
     listing = Listing.query.get_or_404(listing_id)
 
-    # Check if the user is the owner of the listing or an admin
-    if session['username'] != listing.username and session.get('role') != '1':  # Assuming 'role' 1 means admin
+    # Check if the user is the owner of the listing or has admin privilege (privilege=1)
+    if session['username'] != listing.username and session.get('privilege') != 1:  # Check privilege 1 for admin
         flash('You do not have permission to delete this listing.')
         return redirect(url_for('home.home_page'))
 

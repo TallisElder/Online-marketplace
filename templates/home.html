@@ -52,6 +52,10 @@
 <body>
     <h1>Welcome to the Marketplace</h1>
 
+    {% if session.get('privilege') == 1 %}
+    <a href="{{ url_for('admin.admin_panel') }}" class="admin-btn">Admin Panel</a>
+    {% endif %}
+
     <a href="/account">Account</a>
 
     <form method="POST" action="/logout">

@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>Login</h1>
+
     <form method="POST" action="/login">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>
@@ -14,6 +15,15 @@
         <input type="password" id="password" name="password" required><br>
         <button type="submit">Login</button>
     </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {{ messages[0] }}
+            </div>
+        {% endif %}
+    {% endwith %}
+
     <p>Don't have an account? <a href="/register">Register</a></p>
 </body>
 </html>
