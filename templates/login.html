@@ -6,14 +6,96 @@
     <title>Login</title>
 </head>
 <body>
-    <h1>Login</h1>
+    <main>
+
+    <div id="LoginContainer">
+<div id="center">
+    <h2>Sign in to your account</h2>
+   
     <form method="POST" action="/login">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit">Login</button>
+        <input type="text" id="username" name="username" placeholder="Username" required><br>
+        <input type="password" id="password" name="password" placeholder="Password" required><br>
+        <button type="submit" id="LoginButt">Login</button>
     </form>
-    <p>Don't have an account? <a href="/register">Register</a></p>
+<p>New to <span>$</span>ELIX?<a href="/register">Create Account</a></p> 
+    
+</div>
+    </div>
+
+</main>
 </body>
+
+
+
+
+
+
+
+
+
+<style>
+    body{
+        font-family: arial;
+    }
+    p{
+        
+    }
+    h2{
+        font-size: 35px;
+        font-weight: 500;
+    }
+    span{
+        color: green;
+        font-weight: 900;
+    }
+
+    a{
+        color: black;
+    }
+
+    #center{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20%;
+        height: 50%;
+        text-align: center;
+    }
+
+    #LoginContainer{
+        position: relative;
+        height: 100vh;
+
+    }
+
+    form{
+        display: flex;
+        flex-direction: column;
+    }
+    input:focus {
+        outline: none;
+    }
+
+    #username,#password{
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+    border: 1px rgb(119, 119, 119) solid;
+    background-color: rgba(235, 235, 235, 0.555);
+        
+    }
+
+    #LoginButt{
+        background-color: rgb(80, 112, 255);
+        border-style: none;
+        border-radius: 10rem;
+        padding: 0.7rem 10rem 0.7rem 10rem;
+        color: white;
+        font-size: 20px;
+    }
+
+   
+    
+</style>
+
 </html>
