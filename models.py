@@ -1,7 +1,8 @@
 from database import db
 
 class User(db.Model):
-    username = db.Column(db.String(150), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(500), nullable=False)
     privilege = db.Column(db.Integer, nullable=False)
 
