@@ -83,3 +83,28 @@ def delete_listing(listing_id):
 
     flash('Listing and associated image deleted successfully.')
     return redirect(url_for('home.home_page'))
+
+# Added Buy Listing Route
+@home_bp.route('/buy_listing/<int:listing_id>', methods=['POST'])
+def buy_listing(listing_id):
+    # Ensure the user is logged in
+    if not session.get('username'):
+        flash("You must be logged in to buy a listing.")
+        return redirect(url_for('auth.login'))
+
+    # Fetch the listing
+    listing = Listing.query.get_or_404(listing_id)
+
+    # Ensure the listing is still available (not sold)
+    if listing.is_sold:
+        flash("This listing has already been sold.")
+        return redirect(url_for('home.home_page'))  # Adjust this as per your listings route
+
+    # Mark the listing as sold and record the buyer
+    listing.is_sold = True
+    listing.buyer_username = session['username']
+    db.session.commit()
+
+    # Flash a success message
+    flash(f"Congratulations! You have successfully bought the listing: {listing.name}.")
+    return redirect(url_for('home.home_page'))  # Redirect back to listings page

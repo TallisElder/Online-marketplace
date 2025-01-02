@@ -92,11 +92,11 @@
             <p><strong>Posted by:</strong> {{ listing.username }}</p>
 
             {% if not listing.is_sold %}
-                <form method="POST" action="/buy/{{ listing.id }}">
+                <form method="POST" action="{{ url_for('home.buy_listing', listing_id=listing.id) }}">
                     <button type="submit">Buy Now</button>
                 </form>
             {% else %}
-                <p><strong>Sold</strong></p>
+                <p><strong>Sold to {{ listing.buyer_username }}</strong></p>
             {% endif %}
 
             <!-- Show Delete button if the user is the owner or has privilege 1 (admin) -->
