@@ -15,7 +15,22 @@
     </ul>
     <a href="/home">Home</a>
     <a href="/logout">Logout</a>
-
+    
+    <h1>Change Password</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <p>{{ messages[-1] }}</p> <!-- Show only the most recent flash message -->
+        {% endif %}
+    {% endwith %}
+    <form method="POST" action="{{ url_for('auth.change_password') }}">
+        <label for="current_password">Current Password:</label>
+        <input type="password" id="current_password" name="current_password" required><br>
+        <label for="new_password">New Password:</label>
+        <input type="password" id="new_password" name="new_password" required><br>
+        <label for="confirm_password">Confirm New Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password" required><br>
+        <button type="submit">Change Password</button>
+    </form>
 
 </body>
 </html>
