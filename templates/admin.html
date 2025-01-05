@@ -23,6 +23,14 @@
         </li>
         {% endfor %}
     </ul>
+        <!-- Flash message section for the most recent message -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-message">
+            {{ messages[-1] }}
+        </div>
+        {% endif %}
+        {% endwith %}
 
     <h1>Register Admin</h1>
     <form method="POST" action="/registerAdmin">

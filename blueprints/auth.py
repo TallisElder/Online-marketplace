@@ -78,7 +78,7 @@ def register_admin():
 
         # Hash the password and set privilege level to '1' (Admin)
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
-        new_admin = User(username=username, password_hash=hashed_password, privilege=1)
+        new_admin = User(username=username, password_hash=hashed_password, privilege=2)
 
         # Add the new admin user to the database
         db.session.add(new_admin)
