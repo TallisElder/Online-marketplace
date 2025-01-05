@@ -7,7 +7,7 @@ admin_bp = Blueprint('admin', __name__)
 # Admin panel to view and delete users
 @admin_bp.route('/admin')
 def admin_panel():
-    if not session.get('username') or session.get('privilege') != 1:
+    if not session.get('username') or session.get('privilege') not in [1, 2]:
         flash("You must be logged in as an admin to access this page.")
         return redirect(url_for('auth.login'))
 
@@ -19,11 +19,17 @@ def admin_panel():
 # Route to delete a user account
 @admin_bp.route('/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
-    if not session.get('username') or session.get('privilege') != 1:
+    if not session.get('username') or session.get('privilege') not in [1, 2]:
         flash("You must be logged in as an admin to perform this action.")
         return redirect(url_for('auth.login'))
 
     user = User.query.get_or_404(user_id)
+    current_user_privilege = session.get('privilege')
+
+    # Only allow deletion based on privilege level
+    if current_user_privilege == 2 and user.privilege in [1, 2]:
+        flash("Admins cannot delete other admins or the owner.")
+        return redirect(url_for('admin.admin_panel'))
 
     # Deleting the user from the database
     db.session.delete(user)
