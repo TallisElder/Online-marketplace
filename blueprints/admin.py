@@ -1,12 +1,16 @@
 from flask import Blueprint, render_template, session, redirect, url_for, flash
 from models import User  # Assuming a User model exists
 from database import db
+from forms import CreateAdminForm
 
 admin_bp = Blueprint('admin', __name__)
 
 # Admin panel to view and delete users
 @admin_bp.route('/admin')
 def admin_panel():
+
+    create_admin_form = CreateAdminForm()
+
     if not session.get('username') or session.get('privilege') not in [1, 2]:
         flash("You must be logged in as an admin to access this page.")
         return redirect(url_for('auth.login'))
@@ -14,7 +18,7 @@ def admin_panel():
     # Fetch all users from the database (excluding the current admin user)
     users = User.query.filter(User.username != session['username']).all()
 
-    return render_template('admin.html', users=users)
+    return render_template('admin.html', users=users, create_admin_form=create_admin_form)
 
 # Route to delete a user account
 @admin_bp.route('/delete_user/<int:user_id>', methods=['POST'])

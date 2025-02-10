@@ -34,11 +34,10 @@
 
     <h1>Register Admin</h1>
     <form method="POST" action="/registerAdmin">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit">Register Admin</button>
+        {{create_admin_form.hidden_tag()}}
+        {{create_admin_form.username.label}} {{create_admin_form.username()}}<br>
+        {{create_admin_form.password.label}} {{create_admin_form.password()}}<br>
+        {{create_admin_form.submit()}}
     </form>
 
 </body>
