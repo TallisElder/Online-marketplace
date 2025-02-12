@@ -91,7 +91,8 @@
 
             {% if not listing.is_sold %}
                 <form method="POST" action="{{ url_for('home.buy_listing', listing_id=listing.id) }}">
-                    <button type="submit">Buy Now</button>
+                    {{ BuyListForm.hidden_tag() }}
+                    {{ BuyListForm.submit() }}
                 </form>
             {% else %}
                 <p><strong>Sold to {{ listing.buyer_username }}</strong></p>
@@ -100,7 +101,8 @@
             <!-- Show Delete button if the user is the owner or has privilege 1 (admin) -->
             {% if session['username'] == listing.username or session.get('privilege') == 1 %}
                 <form method="POST" action="/delete_listing/{{ listing.id }}">
-                    <button type="submit">Delete</button>
+                    {{ DelListForm.hidden_tag() }}
+                    {{ DelListForm.submit() }}
                 </form>
             {% endif %}
         </div>

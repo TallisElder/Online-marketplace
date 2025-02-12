@@ -82,7 +82,7 @@ def register_admin():
         flash('Admin account created successfully!')
         return redirect(url_for('admin.admin_panel'))  # Redirect back to the admin panel
 
-    return redirect(url_for('admin.admin_panel'))  # Redirect back if form validation fails
+    return redirect(url_for('admin.admin_panel', create_admin_form=create_admin_form))  # Redirect back if form validation fails
 
 
 @auth_bp.route('/change_password', methods=['POST'])

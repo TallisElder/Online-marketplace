@@ -40,3 +40,6 @@ class CreateAdminForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message="Passwords must match")])
     submit = SubmitField('Create Admin')
+
+class BuyListingForm(FlaskForm):
+    submit = SubmitField('Buy')
