@@ -65,9 +65,6 @@ def register_admin():
     username = create_admin_form.username.data
     password = create_admin_form.password.data
 
-    print("Username:", username)
-    print("Password:", password)
-
     if User.query.filter_by(username=username).first():
         flash('Username already exists.')
         return redirect(url_for('admin.admin_panel'))
