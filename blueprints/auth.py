@@ -69,16 +69,11 @@ def register_admin():
         flash('Username already exists.')
         return redirect(url_for('admin.admin_panel'))
 
-
-    print("Raw Password Before Hashing:", password)
     hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
     new_admin = User(username=username, password_hash=hashed_password, privilege=2)
 
-    print("New Admin Object:", new_admin)
     db.session.add(new_admin)
     db.session.commit()
-    print("Admin added successfully!")
-
 
     flash('Admin account created successfully!')
     return redirect(url_for('admin.admin_panel'))
