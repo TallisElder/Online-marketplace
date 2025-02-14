@@ -8,6 +8,7 @@ from blueprints.admin import admin_bp
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+
 csrf = CSRFProtect(app)
 
 # Database configuration

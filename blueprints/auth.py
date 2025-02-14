@@ -62,27 +62,44 @@ def delete_account():
 def register_admin():
     create_admin_form = CreateAdminForm()
 
-    if create_admin_form.validate_on_submit():
-        username = create_admin_form.username.data
-        password = create_admin_form.password.data
+    username = create_admin_form.username.data
+    password = create_admin_form.password.data
 
-        # Check if the username already exists
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists.')
-            return redirect(url_for('admin.admin_panel'))  # Redirect back to admin panel
+    print("Username:", username)
+    print("Password:", password)
 
-        # Hash the password and set privilege level to '2' (Admin)
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
-        new_admin = User(username=username, password_hash=hashed_password, privilege=2)
+    if User.query.filter_by(username=username).first():
+        flash('Username already exists.')
+        return redirect(url_for('admin.admin_panel'))
 
-        # Add the new admin user to the database
-        db.session.add(new_admin)
-        db.session.commit()
 
-        flash('Admin account created successfully!')
-        return redirect(url_for('admin.admin_panel'))  # Redirect back to the admin panel
+    print("Raw Password Before Hashing:", password)
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
+    new_admin = User(username=username, password_hash=hashed_password, privilege=2)
 
-    return redirect(url_for('admin.admin_panel', create_admin_form=create_admin_form))  # Redirect back if form validation fails
+    print("New Admin Object:", new_admin)
+    db.session.add(new_admin)
+    db.session.commit()
+    print("Admin added successfully!")
+
+
+    flash('Admin account created successfully!')
+    return redirect(url_for('admin.admin_panel'))
+
+
+@auth_bp.route('/change_password', methods=['POST'], endpoint='auth_change_password')
+def change_password():
+    form = changePasswordForm(request.form)
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=session.get('username')).first()
+        if user and check_password_hash(user.password_hash, form.old_password.data):
+            user.password_hash = generate_password_hash(form.new_password.data, method='pbkdf2:sha256')
+            db.session.commit()
+            flash("Your password has been updated.")
+        else:
+            flash("Current password is incorrect.")
+    
+    return redirect(url_for('account.account'))  # Redirect back to the account page
 
 
 @auth_bp.route('/change_password', methods=['POST'])
