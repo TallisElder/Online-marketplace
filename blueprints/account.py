@@ -2,11 +2,17 @@ from flask import Blueprint, render_template, session, redirect, request, url_fo
 from werkzeug.security import generate_password_hash
 from models import Listing, User
 from database import db
+from forms import changePasswordForm, logoutForm, DeleteAccountForm
 
 account_bp = Blueprint('account', __name__)
 
 @account_bp.route('/account', methods=['GET', 'POST'])
 def account():
+
+    form = changePasswordForm()
+    logout_form = logoutForm()
+    delete_account = DeleteAccountForm()
+
     if not session.get('username'):
         return redirect(url_for('auth.login'))
 
@@ -24,4 +30,4 @@ def account():
         db.session.commit()
         return "Password updated successfully."
 
-    return render_template('account.html', user_listings=user_listings)
+    return render_template('account.html', user_listings=user_listings, form=form, logout_form=logout_form, delete_account=delete_account)

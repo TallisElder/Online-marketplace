@@ -2,121 +2,108 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from database import db
+from forms import LoginForm, RegisterForm, logoutForm, changePasswordForm, DeleteAccountForm, CreateAdminForm
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password_hash, password):
-            session['username'] = username
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and check_password_hash(user.password_hash, form.password.data):
+            session['username'] = form.username.data
             session['privilege'] = user.privilege
             return redirect(url_for('home.home_page'))
-        flash('Invalid username or password.')
-        return redirect(url_for('auth.login'))
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        privilege = request.form.get('admin', '0')  # Default to '0' if not provided
-        if User.query.filter_by(username=username).first():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        if User.query.filter_by(username=form.username.data).first():
             flash('Username already exists.')
             return redirect(url_for('auth.register'))
-        hashed_password = generate_password_hash(password, method='pbkdf2')
-        new_user = User(username=username, password_hash=hashed_password, privilege=privilege)
+        
+        hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=16)
+        new_user = User(username=form.username.data, password_hash=hashed_password, privilege=0)
         db.session.add(new_user)
         db.session.commit()
-        flash('Account created successfully! You can now log in.')
-        return redirect(url_for('auth.login'))
-    return render_template('register.html')
+        return redirect(url_for('auth.login', form=form))
+    return render_template('register.html', form=form)
 
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
-    session.pop('username', None)
-    session.pop('privilege', None)  # Clear the privilege as well
-    return redirect(url_for('auth.login'))
+    form = logoutForm()
+    session.clear()
+    return redirect(url_for('auth.login', form=form))
 
-@auth_bp.route('/delete_account', methods=['GET', 'POST'])
+@auth_bp.route('/delete_account', methods=['POST'])
 def delete_account():
-    if 'username' not in session:
-        return redirect(url_for('auth.login'))  # Ensure the user is logged in
+    if not session.get('username'):
+        flash('You need to be logged in to delete your account.')
+        return redirect(url_for('auth.login'))
 
     user = User.query.filter_by(username=session['username']).first()
+
     if not user:
-        return redirect(url_for('auth.login'))  # Handle case if user does not exist
+        flash("User not found.")
+        return redirect(url_for('account.account'))  # Redirect back to account if user is not found
 
-    if request.method == 'POST':
-        # Delete the user's account
-        db.session.delete(user)
-        db.session.commit()
+    # Delete user from the database
+    db.session.delete(user)
+    db.session.commit()
+    session.clear()  # Clear the session after deletion
 
-        # Logout the user after deletion
-        session.pop('username', None)
-        session.pop('privilege', None)
+    flash("Your account has been successfully deleted.")
+    return redirect(url_for('auth.login'))  # Redirect to login page
 
-        flash('Account deleted successfully.')
-        return redirect(url_for('auth.login'))  # Redirect to login page after deletion
-
-    return render_template('delete_account.html', username=user.username)
-
-@auth_bp.route('/registerAdmin', methods=['GET', 'POST'])
+@auth_bp.route('/registerAdmin', methods=['POST'])
 def register_admin():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    create_admin_form = CreateAdminForm()
 
-        # Check if the username already exists
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists.')
-            return redirect(url_for('auth.register_admin'))
+    username = create_admin_form.username.data
+    password = create_admin_form.password.data
 
-        # Hash the password and set privilege level to '1' (Admin)
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
-        new_admin = User(username=username, password_hash=hashed_password, privilege=2)
+    if User.query.filter_by(username=username).first():
+        flash('Username already exists.')
+        return redirect(url_for('admin.admin_panel'))
 
-        # Add the new admin user to the database
-        db.session.add(new_admin)
-        db.session.commit()
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
+    new_admin = User(username=username, password_hash=hashed_password, privilege=2)
 
-        flash('Admin account created successfully!')
-        return redirect(url_for('admin.admin_panel'))  # Redirect to the admin panel
+    db.session.add(new_admin)
+    db.session.commit()
 
-    return render_template('register_admin.html')
+    flash('Admin account created successfully!')
+    return redirect(url_for('admin.admin_panel'))
 
-@auth_bp.route('/change_password', methods=['GET', 'POST'])
+
+@auth_bp.route('/change_password', methods=['POST'], endpoint='auth_change_password')
 def change_password():
-    if not session.get('username'):
-        flash('You need to be logged in to change your password.')
-        return redirect(url_for('auth.login'))
+    form = changePasswordForm(request.form)
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=session.get('username')).first()
+        if user and check_password_hash(user.password_hash, form.old_password.data):
+            user.password_hash = generate_password_hash(form.new_password.data, method='pbkdf2:sha256')
+            db.session.commit()
+            flash("Your password has been updated.")
+        else:
+            flash("Current password is incorrect.")
+    
+    return redirect(url_for('account.account'))  # Redirect back to the account page
 
-    if request.method == 'POST':
-        current_password = request.form['current_password']
-        new_password = request.form['new_password']
-        confirm_password = request.form['confirm_password']
 
-        # Fetch the user from the database
-        user = User.query.filter_by(username=session['username']).first()
-
-        if not user or not check_password_hash(user.password_hash, current_password):
-            flash('Current password is incorrect.')
-            return redirect(url_for('auth.change_password'))
-
-        if new_password != confirm_password:
-            flash('New passwords do not match.')
-            return redirect(url_for('auth.change_password'))
-
-        # Update the password and commit to the database
-        user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha256', salt_length=16)
-        db.session.commit()
-
-        flash('Password changed successfully. Please log in again.')
-        session.clear()  # Log the user out
-        return redirect(url_for('auth.login'))
-
-    return render_template('change_password.html')
+@auth_bp.route('/change_password', methods=['POST'])
+def change_password():
+    form = changePasswordForm(request.form)
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=session.get('username')).first()
+        if user and check_password_hash(user.password_hash, form.old_password.data):
+            user.password_hash = generate_password_hash(form.new_password.data, method='pbkdf2:sha256')
+            db.session.commit()
+            flash("Your password has been updated.")
+        else:
+            flash("Current password is incorrect.")
+    
+    return redirect(url_for('account.account'))  # Redirect back to the account page

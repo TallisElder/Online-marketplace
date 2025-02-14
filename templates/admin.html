@@ -10,15 +10,14 @@
     <p><a href="{{ url_for('home.home_page') }}">Back to Home</a></p>
     
     <h2>Manage Users</h2>
-    <label for="admin">admin? (1=yes 0=no):</label>
-        <input type="text" id="admin" name="admin" required><br>
+    
     <ul class="user-list">
         {% for user in users %}
         <li>
             <strong>{{ user.username }}</strong>
             <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" style="display:inline;">
-                <button type="submit">Delete Account</button>
-                
+                {{ delete_account.hidden_tag() }}
+                {{ delete_account.submit() }}
             </form>
         </li>
         {% endfor %}
@@ -34,11 +33,10 @@
 
     <h1>Register Admin</h1>
     <form method="POST" action="/registerAdmin">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit">Register Admin</button>
+        {{create_admin_form.hidden_tag()}}
+        {{create_admin_form.username.label}} {{create_admin_form.username()}}<br>
+        {{create_admin_form.password.label}} {{create_admin_form.password()}}<br>
+        {{create_admin_form.submit()}}
     </form>
 
 </body>
