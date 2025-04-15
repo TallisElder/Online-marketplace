@@ -44,32 +44,38 @@ def create_listing():
         return redirect(url_for('auth.login'))
 
     if CLForm.validate_on_submit():
-    
         name = CLForm.title.data
         description = CLForm.description.data
         price = CLForm.price.data
-        file = request.files['image']
+        file = request.files.get('image')  # Use .get() for safety
 
+        filepath = None  # Default in case no image is uploaded
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(UPLOAD_FOLDER, filename)
-            file.save(filepath)
+        # Check if file is uploaded and valid
+        if file and file.filename != '':
+            if allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(filepath)
+            else:
+                flash('Invalid file type. Please upload a JPG, PNG, JPEG, or GIF image.')
+                return redirect(url_for('home.home_page'))
 
-        # Add the new listing to the database
+        # Create the new listing, image is optional
         new_listing = Listing(
             name=name,
             description=description,
             price=float(price),
             image_url=filepath,
-            username=session['username']  # Store the creator's username
+            username=session['username']
         )
         db.session.add(new_listing)
         db.session.commit()
-        return redirect(url_for('home.home_page', CLForm=CLForm))
+        flash('Listing created successfully!')
+        return redirect(url_for('home.home_page'))
     else:
-        flash('Invalid file type. Please upload a valid image.')
-        return redirect(url_for('home.home_page', CLForm=CLForm))
+        flash('Form validation failed. Please check your input.')
+        return redirect(url_for('home.home_page'))
     
 @home_bp.route('/delete_listing/<int:listing_id>', methods=['POST'])
 def delete_listing(listing_id):
