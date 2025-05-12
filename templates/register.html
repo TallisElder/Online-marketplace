@@ -9,6 +9,7 @@
     <div id="LoginContainer">
         <div id="center">
     <h2>Register</h2>
+<<<<<<< Updated upstream
 
     <form method="POST" action="/register">
         
@@ -20,6 +21,20 @@
         </div>
     </div>
 
+=======
+    
+    <form method="POST" action="/register">
+    {{ form.hidden_tag() }}
+
+    {{ form.username(class="input-field", id="username", placeholder="Username", required=True) }}<br>
+    {{ form.password(class="input-field", id="password", placeholder="Password", required=True) }}<br>
+    {{ form.submit(class="submit-button", id="regButt") }}
+</form>
+    <p>Already have an account? <a href="/login">Login</a></p>
+
+        </div>
+     </div>
+>>>>>>> Stashed changes
 </body>
 
 
@@ -80,8 +95,13 @@
 #regButt:hover{
     background-color:rgb(102, 129, 248);
 }
+<<<<<<< Updated upstream
 
    
     
 </style>
+=======
+</style>
+
+>>>>>>> Stashed changes
 </html>
