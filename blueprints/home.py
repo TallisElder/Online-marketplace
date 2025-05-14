@@ -135,3 +135,7 @@ def buy_listing(listing_id):
     # Flash a success message
     flash(f"Congratulations! You have successfully bought the listing: {listing.name}.")
     return redirect(url_for('home.home_page', BuyListForm=BuyListForm))  # Redirect back to listings page
+
+@home_bp.route('/support')
+def support():
+    return render_template('support.html')
