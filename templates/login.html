@@ -6,25 +6,24 @@
     <title>Login</title>
 </head>
 <body>
-
+    <main>
 
     <div id="LoginContainer">
 <div id="center">
     <h2>Sign in to your account</h2>
    
-  <form method="POST" action="/login">
-    {{ form.hidden_tag() }}
-    
-    {{ form.username(class="input-field", id="username", placeholder="Username", required=True) }}<br>
-    {{ form.password(class="input-field", id="password", placeholder="Password", required=True) }}<br>
-    {{ form.submit(class="submit-button", id="LoginButt") }}
-</form>
-
-<p>New to <span id="green">$</span>ELLIX? <a href="/register">Create Account</a></p>
+    <form method="POST" action="/login">
+        {{ form.hidden_tag() }}
+        {{ form.username.label }} {{ form.username() }}<br>
+        {{ form.password.label }} {{ form.password() }}<br>
+        {{ form.submit() }}
+    </form>
+<p>New to <span>$</span>ELIX?<a href="/register">Create Account</a></p> 
     
 </div>
     </div>
 
+</main>
 </body>
 
 
@@ -44,7 +43,7 @@
         font-weight: 500;
     }
     span{
-        color: rgb(0, 0, 0);
+        color: green;
         font-weight: 900;
     }
 
@@ -92,11 +91,6 @@
         color: white;
         font-size: 20px;
     }
-    #LoginButt:hover{
-    background-color:rgb(102, 129, 248);
-}
-
-    #green{color: green;}
 
    
     

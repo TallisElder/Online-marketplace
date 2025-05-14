@@ -3,136 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <style>
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .listing {
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .listing img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 10px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border: 1px solid #ccc;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-        .modal.active,
-        .modal-overlay.active {
-            display: block;
-        }
-
-    </style>
+    <title>Marketplace Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/test.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Welcome to the Marketplace {{ username }}</h1>
 
-    {% if session.get('privilege') != 0 %}
-    <a href="{{ url_for('admin.admin_panel') }}" class="admin-btn">Admin Panel</a>
-    {% endif %}
-
-    <a href="/account">Account</a>
-
-    <form method="POST" action="/logout">
-        {{ logout_form.hidden_tag() }}
-        {{ logout_form.logoutSubmit() }}
-    </form>
-
-    <button id="createListingBtn">Create Listing</button>
-    <!-- Create Listing Modal -->
-    <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="modal" id="createListingModal">
-        <h2>Create a New Listing</h2>
-        <form method="POST" action="/create_listing" enctype="multipart/form-data">
-            {{ CLForm.hidden_tag() }}
-            {{ CLForm.title.label }} {{ CLForm.title() }}<br>
-            {{ CLForm.description.label }} {{ CLForm.description() }}<br>
-            {{ CLForm.price.label }} {{ CLForm.price() }}<br>
-            {{ CLForm.image.label }} {{ CLForm.image() }}<br>
-            {{ CLForm.submit() }}
-        </form>
-        <button id="closeModalBtn">Close</button>
-    </div>
-
-    <div class="grid">
-        {% for listing in listings %}
-        <div class="listing">
-            <img src="{{ url_for('static', filename=listing.image_url.split('static/')[-1]) }}" alt="{{ listing.name }}" width="100%">
-            <h2>{{ listing.name }}</h2>
-            <p>{{ listing.description }}</p>
-            <p><strong>Price:</strong> ${{ listing.price }}</p>
-            <p><strong>Posted by:</strong> {{ listing.username }}</p>
-
-            {% if not listing.is_sold %}
-                <form method="POST" action="{{ url_for('home.buy_listing', listing_id=listing.id) }}">
-                    {{ BuyListForm.hidden_tag() }}
-                    {{ BuyListForm.submit() }}
-                </form>
-            {% else %}
-                <p><strong>Sold to {{ listing.buyer_username }}</strong></p>
-            {% endif %}
-
-            <!-- Show Delete button if the user is the owner or has privilege 1 (admin) -->
-            {% if session['username'] == listing.username or session.get('privilege') == 1 %}
-                <form method="POST" action="/delete_listing/{{ listing.id }}">
-                    {{ DelListForm.hidden_tag() }}
-                    {{ DelListForm.submit() }}
-                </form>
-            {% endif %}
+    <header class="header">
+        <div class="container">
+            <nav class="top-nav">
+                <a href="{{ url_for('admin.admin_panel') }}">Admin Panel</a>
+                <a href="/support">Support</a>
+                <a href="/account">Account</a>
+                <a href="/logout">Logout</a>
+            </nav>
+            <h1>Welcome to the Marketplace, <span>{{ username }}</span></h1>
         </div>
-        {% endfor %}
-    </div>
+    </header>
 
-    <script>
-        // Get modal elements
-        const modal = document.getElementById('createListingModal');
-        const modalOverlay = document.getElementById('modalOverlay');
-        const createListingBtn = document.getElementById('createListingBtn');
-        const closeModalBtn = document.getElementById('closeModalBtn');
+    <div class="container">
 
-        // Show the modal
-        createListingBtn.addEventListener('click', () => {
-            modal.classList.add('active');
-            modalOverlay.classList.add('active');
-        });
+        <div class="create-listing-btn-container">
+             <button id="createListingBtn">
+                Create New Listing
+            </button>
+        </div>
 
-        // Hide the modal
-        closeModalBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-            modalOverlay.classList.remove('active');
-        });
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal" id="createListingModal">
+            <h2>Create a New Listing</h2>
+            <form method="POST" action="/create_listing" enctype="multipart/form-data">
+                {{ CLForm.hidden_tag() }}
+                <div class="form-group">
+                    {{ CLForm.title.label }}
+                    {{ CLForm.title() }}
+                </div>
+                 <div class="form-group">
+                    {{ CLForm.description.label }}
+                    {{ CLForm.description() }}
+                </div>
+                 <div class="form-group">
+                    {{ CLForm.price.label }}
+                    {{ CLForm.price() }}
+                </div>
+                 <div class="form-group">
+                    {{ CLForm.image.label }}
+                    {{ CLForm.image() }}
+                </div>
+                {{ CLForm.submit() }}
+            </form>
+            <button id="closeModalBtn">Close</button>
+        </div>
 
-        // Hide the modal when clicking outside of it
-        modalOverlay.addEventListener('click', () => {
-            modal.classList.remove('active');
-            modalOverlay.classList.remove('active');
-        });
-    </script>
+        <div class="grid">
+            {% for listing in listings %}
+            <div class="listing">
+                <img src="{{ url_for('static', filename=listing.image_url.split('static/')[-1]) if listing.image_url else url_for('static', filename='placeholder.png') }}" alt="{{ listing.name }}">
+                <div class="listing-content">
+                    <h2>{{ listing.name }}</h2>
+                    <p>{{ listing.description }}</p>
+                    <p class="price"><strong>Price:</strong> ${{ listing.price }}</p>
+                    <p class="posted-by"><strong>Posted by:</strong> {{ listing.username }}</p>
+
+                    <div class="button-container">
+                        {% if not listing.is_sold %}
+                            <form method="POST" action="{{ url_for('home.buy_listing', listing_id=listing.id) }}">
+                                {{ BuyListForm.hidden_tag() }}
+                                <button type="submit" class="buy-button">Buy Now</button>
+                            </form>
+                        {% else %}
+                            <p class="sold-status"><strong>Sold to {{ listing.buyer_username }}</strong></p>
+                        {% endif %}
+
+                        {% if session['username'] == listing.username or session.get('privilege') == 1 %}
+                            <form method="POST" action="/delete_listing/{{ listing.id }}">
+                                {{ DelListForm.hidden_tag() }}
+                                <button type="submit" class="delete-button">Delete Listing</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div> 
+    <script src="{{ url_for('static', filename='js/test.js') }}"></script>
 </body>
 </html>
