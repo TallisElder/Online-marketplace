@@ -8,7 +8,6 @@ admin_bp = Blueprint('admin', __name__)
 # Admin panel to view and delete users
 @admin_bp.route('/admin')
 def admin_panel():
-
     create_admin_form = CreateAdminForm()
     delete_account = DeleteAccountForm()
 
@@ -19,7 +18,12 @@ def admin_panel():
     # Fetch all users from the database (excluding the current admin user)
     users = User.query.filter(User.username != session['username']).all()
 
-    return render_template('admin.html', users=users, create_admin_form=create_admin_form, delete_account=delete_account)
+    return render_template(
+        'admin.html',
+        users=users,
+        create_admin_form=create_admin_form,
+        delete_account=delete_account
+    )
 
 # Route to delete a user account
 @admin_bp.route('/delete_user/<int:user_id>', methods=['POST'])
@@ -31,12 +35,19 @@ def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     current_user_privilege = session.get('privilege')
 
-    # Only allow deletion based on privilege level
-    if (current_user_privilege == 2 and user.privilege in [1, 2]) or (current_user_privilege == 1 and user.privilege in [0, 1]):
-        flash("Admins cannot delete other admins or the owner.")
-        return redirect(url_for('admin.admin_panel'))
+    # Superadmin (privilege = 1) can delete users with privilege 0 or 2, but not other superadmins (privilege=1)
+    if current_user_privilege == 1:
+        if user.privilege == 1:
+            flash("Superadmins cannot delete other superadmins.")
+            return redirect(url_for('admin.admin_panel'))
 
-    # Deleting the user from the database
+    # Regular admin (privilege = 2) can delete only regular users (privilege = 0)
+    elif current_user_privilege == 2:
+        if user.privilege != 0:
+            flash("Admins can only delete regular users.")
+            return redirect(url_for('admin.admin_panel'))
+
+    # If we get here, deletion is allowed
     db.session.delete(user)
     db.session.commit()
 
