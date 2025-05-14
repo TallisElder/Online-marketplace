@@ -49,26 +49,14 @@ def create_listing():
         price = CLForm.price.data
         file = request.files.get('image')  # Use .get() for safety
 
-        filepath_for_db = None  # Default in case no image is uploaded
+        filepath = None  # Default in case no image is uploaded
 
         # Check if file is uploaded and valid
         if file and file.filename != '':
             if allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                # Use os.path.join to get the system-specific path for saving
-                filepath_system = os.path.join(UPLOAD_FOLDER, filename)
-
-                try:
-                    # Save the file to the filesystem
-                    file.save(filepath_system)
-
-                    # Create the path for the database using forward slashes
-                    # This assumes UPLOAD_FOLDER is relative to the static directory
-                    filepath_for_db = os.path.join(UPLOAD_FOLDER, filename).replace('\\', '/')
-
-                except Exception as e:
-                    flash(f'Error saving image file: {e}')
-                    return redirect(url_for('home.home_page'))
+                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(filepath)
             else:
                 flash('Invalid file type. Please upload a JPG, PNG, JPEG, or GIF image.')
                 return redirect(url_for('home.home_page'))
@@ -78,7 +66,7 @@ def create_listing():
             name=name,
             description=description,
             price=float(price),
-            image_url=filepath_for_db, # Save the web-friendly path
+            image_url=filepath,
             username=session['username']
         )
         db.session.add(new_listing)
@@ -88,7 +76,7 @@ def create_listing():
     else:
         flash('Form validation failed. Please check your input.')
         return redirect(url_for('home.home_page'))
-
+    
 @home_bp.route('/delete_listing/<int:listing_id>', methods=['POST'])
 def delete_listing(listing_id):
 
@@ -100,25 +88,19 @@ def delete_listing(listing_id):
     # Query the listing
     listing = Listing.query.get_or_404(listing_id)
 
+
     # Check if the user is the owner of the listing or has admin privilege (privilege=1)
-    # Uncomment and activate this security check!
-    # if session.get('username') != listing.username and session.get('privilege') != 1:
-    #     flash('You do not have permission to delete this listing.')
-    #     return redirect(url_for('home.home_page'))
+    #if session['username'] != listing.username and session.get('privilege') != 1:  # Check privilege 1 for admin
+    #    flash('You do not have permission to delete this listing.')
+    #    return redirect(url_for('home.home_page'))
 
-    # Get the file path of the image (this might still contain backslashes on Windows)
-    image_filepath_system = listing.image_url
-
+    # Get the file path of the image
+    image_filepath = listing.image_url  # Assuming image_url is stored with the full path like 'static/ListingPhotos/filename.jpg'
+    
     # Delete the file from the filesystem
-    # Use os.path.exists with the path as stored in the DB (might have backslashes)
-    if image_filepath_system and os.path.exists(image_filepath_system):
-        try:
-            os.remove(image_filepath_system)
-        except Exception as e:
-             # Log this error, but don't necessarily stop deletion if the file is already gone
-             print(f"Error deleting image file {image_filepath_system}: {e}")
-
-
+    if os.path.exists(image_filepath):
+        os.remove(image_filepath)
+    
     # Delete the listing from the database
     db.session.delete(listing)
     db.session.commit()
@@ -153,4 +135,3 @@ def buy_listing(listing_id):
     # Flash a success message
     flash(f"Congratulations! You have successfully bought the listing: {listing.name}.")
     return redirect(url_for('home.home_page', BuyListForm=BuyListForm))  # Redirect back to listings page
-
