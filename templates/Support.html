@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>$ellix Support</title>
-    <link rel="stylesheet" href="C:\Users\trist\project\Github\static\css\styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <header class="header">
         <div class="container">
             <nav class="top-nav">
-                <a href="admin.html">Admin Panel</a>
-                <a href="index.html">Home</a>
-                <a href="account.html">Account</a>
-                <a href="logout.html">Logout</a>
-                <a href="support.html">Support</a>
-            </nav>
+            <a href="{{ url_for('home.home_page') }}">Home</a>
+            {% if session.get('privilege') != 0 %}
+            <a href="{{ url_for('admin.admin_panel') }}" class="admin-btn">Admin Panel</a>
+            {% endif %}
+            <a href="/account">Account</a> 
+        </nav>
             <h1><span class="brand">$ellix</span> Support Center</h1>
             <p>How can we help you today?</p>
         </div>
