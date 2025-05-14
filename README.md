@@ -8,6 +8,6 @@ The platform features state-of-the-art login functionality and utilizes a fully 
 
 ## Development Team
 - **Tallis Elder** – Full Stack Developer, responsible for backend development and initial frontend layout
-- **Aidan Gibb** – Frontend Developer, focusing on UI/UX design
+- **Aidan Gibb** – Frontend Developer, focusing on register and login UI/UX design
 - **Tristian Duffy** – Frontend Developer, contributing to design and user interface development
-- **Jakub Debrowski** – Wireframe Designer, responsible for the initial layout and structure of the platform
+- **Levi Mair** - Frontend Developer, focusing on account and admin management UI/UX
