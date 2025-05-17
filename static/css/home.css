@@ -1,3 +1,10 @@
+/* padding fix for boxes */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* Apply Inter font if loaded */
 body {
     font-family: 'Inter', sans-serif;
