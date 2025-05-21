@@ -80,7 +80,7 @@
                             <p class="sold-status"><strong>Sold to {{ listing.buyer_username }}</strong></p>
                         {% endif %}
 
-                        {% if session['username'] == listing.username or session.get('privilege') == 1 %}
+                        {% if session['username'] == listing.username or session.get('privilege') != 0 %}
                             <form method="POST" action="/delete_listing/{{ listing.id }}">
                                 {{ DelListForm.hidden_tag() }}
                                 <button type="submit" class="delete-button">Delete Listing</button>
