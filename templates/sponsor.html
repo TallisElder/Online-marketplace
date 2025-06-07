@@ -4,24 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>$ellix – Sponsorship</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='/static/css/sponsor.css') }}">
+  <link rel="stylesheet" href="/static/css/sponsor.css">
 </head>
 <body>
 
-  <!-- Header (Flask-integrated) -->
-  <header class="header">
-    <div class="container">
-      <nav class="top-nav">
-        <a href="{{ url_for('home.home_page') }}">Home</a>
-        {% if session.get('privilege') != 0 %}
-          <a href="{{ url_for('admin.admin_panel') }}" class="admin-btn">Admin Panel</a>
-        {% endif %}
-        <a href="/account">Account</a> 
-      </nav>
-      <h1><span class="brand">$ellix</span> Support Center</h1>
-      <p>How can we help you today?</p>
-    </div>
-  </header>
+<header class="header">
+        <div class="container">
+            <nav class="top-nav">
+            <a href="{{ url_for('home.home_page') }}">Home</a>
+            {% if session.get('privilege') != 0 %}
+            <a href="{{ url_for('admin.admin_panel') }}" class="admin-btn">Admin Panel</a>
+            {% endif %}
+            <a href="/account">Account</a>
+            <a href="/sponsor">Sponsor</a>
+        </nav>
+            <h1><span class="brand">$ellix</span> Sponsor Page</h1>
+        </div>
+    </header>
 
   <!-- Hero section -->
   <section class="hero">
@@ -39,19 +38,19 @@
     <p class="subtext">These organizations help drive our mission forward.</p>
     <div class="sponsor-list">
       <div class="sponsor">
-        <h3>Fair Trade International</h3>
+        <a href="https://www.fairtrade.org.uk/"><h3>Fair Trade International</h3></a>
         <p>Empowering farmers and workers to secure better trade conditions.</p>
       </div>
       <div class="sponsor">
-        <h3>B Lab (B Corp)</h3>
+        <a href="https://www.bcorporation.net/en-us/"><h3>B Lab (B Corp)</h3></a>
         <p>Advocating for ethical business standards and accountability.</p>
       </div>
       <div class="sponsor">
-        <h3>Tech for Good</h3>
+        <a href="https://www.techforgood.net/"><h3>Tech for Good</h3></a>
         <p>Creating opportunities for inclusive, digital employment.</p>
       </div>
       <div class="sponsor">
-        <h3>Ellen MacArthur Foundation</h3>
+        <a href="https://www.ellenmacarthurfoundation.org/"><h3>Ellen MacArthur Foundation</h3></a>
         <p>Leading the transition to a circular, zero-waste economy.</p>
       </div>
     </div>
@@ -64,5 +63,10 @@
     <a href="#" class="btn">Contact Us</a>
   </footer>
 
+
+<style>a{
+  text-decoration: none;
+}
+</style>
 </body>
 </html>

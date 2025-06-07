@@ -66,7 +66,7 @@ body {
 }
 
 .goal-12 {
-  background: #f0fff4;
+  background: #b3fcb3bb;
   color: #38a169;
 }
 
@@ -130,4 +130,33 @@ body {
 
 .btn:hover {
   background: #276749;
+}
+
+
+.header {
+    text-align: center;
+    padding: 80px 0 60px;
+    background: linear-gradient(135deg, #2A2F35, #1a1e23);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1000 100" xmlns="http://www.w3.org/2000/svg"><path fill="%23f5f7fa" d="M0 70L50 85Q100 100 150 85L200 70Q250 55 300 70L350 85Q400 100 450 85L500 70Q550 55 600 70L650 85Q700 100 750 85L800 70Q850 55 900 70L950 85Q1000 100 1050 85L1000 0H0Z"></path></svg>');
+    background-size: cover;
+}
+
+.brand {
+    font-size: 2.8em;
+    color: #4CAF50;
+    font-weight: 700;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

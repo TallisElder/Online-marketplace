@@ -139,3 +139,7 @@ def buy_listing(listing_id):
 @home_bp.route('/support')
 def support():
     return render_template('support.html')
+
+@home_bp.route('/sponsor')
+def sponsor():
+    return render_template('sponsor.html')
